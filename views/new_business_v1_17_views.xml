@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Vista lista ──────────────────────────────────────────────── -->
+    <record id="view_new_business_v1_17_list" model="ir.ui.view">
+        <field name="name">new.business.v1.17.list</field>
+        <field name="model">new.business.v1.17</field>
+        <field name="arch" type="xml">
+            <tree string="New Business Report" create="false" edit="false" delete="false">
+                <field name="new_business_year"   string="Anno"/>
+                <field name="new_business_month"  string="Mese"/>
+                <field name="order_id"            string="Ordine"/>
+                <field name="order_date"          string="Data ordine"/>
+                <field name="salesperson_id"      string="Venditore"/>
+                <field name="partner_id"          string="Cliente"/>
+                <field name="indirect_partner_id" string="Cliente Indiretto"/>
+                <field name="product_id"          string="Prodotto"/>
+                <field name="product_type"        string="Tipo"/>
+                <field name="product_qty"         string="Quantità"/>
+                <field name="price_unit_line"     string="Prezzo Unitario"/>
+                <field name="amount_new_business" string="Valore NB (€)" sum="Totale"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ── Vista form ───────────────────────────────────────────────── -->
+    <record id="view_new_business_v1_17_form" model="ir.ui.view">
+        <field name="name">new.business.v1.17.form</field>
+        <field name="model">new.business.v1.17</field>
+        <field name="arch" type="xml">
+            <form string="New Business" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group string="Ordine">
+                            <field name="order_id"            string="Ordine di vendita"/>
+                            <field name="order_line_id"       string="Riga ODV"/>
+                            <field name="order_date"          string="Data ordine"/>
+                            <field name="salesperson_id"      string="Venditore"/>
+                        </group>
+                        <group string="Cliente">
+                            <field name="partner_id"          string="Cliente"/>
+                            <field name="indirect_partner_id" string="Cliente Indiretto"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Prodotto">
+                            <field name="product_id"          string="Prodotto"/>
+                            <field name="product_type"        string="Tipologia prodotto"/>
+                            <field name="product_qty"         string="Quantità"/>
+                            <field name="price_unit_line"     string="Prezzo Unitario"/>
+                        </group>
+                        <group string="New Business">
+                            <field name="new_business_year"   string="Anno New Business"/>
+                            <field name="new_business_month"  string="Mese New Business"/>
+                            <field name="amount_new_business" string="Valore New Business (€)"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Vista pivot ──────────────────────────────────────────────── -->
+    <record id="view_new_business_v1_17_pivot" model="ir.ui.view">
+        <field name="name">new.business.v1.17.pivot</field>
+        <field name="model">new.business.v1.17</field>
+        <field name="arch" type="xml">
+            <pivot string="New Business" disable_linking="false">
+                <field name="new_business_year"   type="row"/>
+                <field name="salesperson_id"      type="row"/>
+                <field name="product_type"        type="col"/>
+                <field name="amount_new_business" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ── Filtri di ricerca ────────────────────────────────────────── -->
+    <record id="view_new_business_v1_17_search" model="ir.ui.view">
+        <field name="name">new.business.v1.17.search</field>
+        <field name="model">new.business.v1.17</field>
+        <field name="arch" type="xml">
+            <search string="Cerca New Business">
+                <field name="salesperson_id"      string="Venditore"/>
+                <field name="partner_id"          string="Cliente"/>
+                <field name="indirect_partner_id" string="Cliente Indiretto"/>
+                <field name="product_type"        string="Tipo prodotto"/>
+                <separator/>
+                <!-- Filtri rapidi per anno -->
+                <filter string="Anno corrente" name="current_year"
+                        domain="[('new_business_year', '=', context_today().strftime('%Y'))]"/>
+                <filter string="Anno precedente" name="last_year"
+                        domain="[('new_business_year', '=', (context_today().replace(year=context_today().year - 1)).strftime('%Y'))]"/>
+                <separator/>
+                <!-- Filtri per tipologia -->
+                <filter string="Canone / Corpo"    name="canone"
+                        domain="[('product_type', '=', 'canone')]"/>
+                <filter string="Attivazione"       name="attivazione"
+                        domain="[('product_type', '=', 'attivazione')]"/>
+                <filter string="Pacchetti Ore DI"  name="ore_di"
+                        domain="[('product_type', '=', 'ore_di')]"/>
+                <filter string="Pacchetti Ore Cat" name="ore_cat"
+                        domain="[('product_type', '=', 'ore_cat')]"/>
+                <separator/>
+                <!-- Raggruppa per -->
+                <group expand="0" string="Raggruppa per">
+                    <filter string="Anno"          name="group_year"
+                            context="{'group_by': 'new_business_year'}"/>
+                    <filter string="Mese"          name="group_month"
+                            context="{'group_by': 'new_business_month'}"/>
+                    <filter string="Venditore"     name="group_salesperson"
+                            context="{'group_by': 'salesperson_id'}"/>
+                    <filter string="Tipo"          name="group_type"
+                            context="{'group_by': 'product_type'}"/>
+                    <filter string="Cliente"       name="group_partner"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter string="Cliente Indiretto" name="group_indirect"
+                            context="{'group_by': 'indirect_partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ───────────────────────────────────────────────────── -->
+    <record id="action_new_business_v1_17" model="ir.actions.act_window">
+        <field name="name">New Business Report</field>
+        <field name="res_model">new.business.v1.17</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="context">{
+            'search_default_current_year': 1
+        }</field>
+    </record>
+
+    <!-- ── Voce di menu sotto Vendite ───────────────────────────────── -->
+    <menuitem id="menu_new_business_v1_17"
+              name="New Business"
+              parent="sale.sale_menu_root"
+              action="action_new_business_v1_17"
+              sequence="25"/>
+
+</odoo>
